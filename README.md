@@ -1,31 +1,4 @@
-# CoCWeb3 Front End
-- []login page
-- []Create new player page
-- []Raid page 
-
-## Front End To Do List:
-- [X] New Nextjs project
-- [] Login Page
-    - [X] log in button using Web3uikit and moralis  
-    - [] 
-    - []
-- [] Home Page
-    - [X] Create New player button
-    - [] create new player to disappear when address to username is found
-
-- [] PLayer Details card
-    - [X] get players details from contract
-    - [X] format the players details. Player rank should be based on miltary ranking
-
-- [] Raid Level 1 Page 
-    - []
-    - []
-    - []
-- []
-- []
-- []
-- []
-- []
-- []
+# Code of Conflict Front End
 
 
+Welcome to "Starfire Assault," an adrenaline-pumping online military game that will immerse you in intense raid missions. Engage in strategic warfare, earning XP to level up and unlock new challenges. But here's the twist: each successful raid grants you random loot, in the form of valuable Non-Fungible Tokens (NFTs). These NFTs represent unique weapons, vehicles, and equipment, each providing specific utilities and advantages. Smart utilization of these NFTs will enhance your chances of success in future raids. Form alliances, customize your loadouts, and conquer enemy territories. Join the ranks of elite players and dominate the battlefield in Starfire Assault!

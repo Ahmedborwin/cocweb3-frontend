@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react"
 
 export default function PlayerDetails(playerInformation) {
-    const [playerDetails, setPlayerDetails] = useState([])
-    const rankDisplay = () => {
+    const [playerDetails, setPlayerDetails] = useState({ Username: "", XP: 0, Rank: "" })
+
+    const getPlayerInfo = async () => {
+        const playerInformation = await getPlayer()
+
         function getRankByIndex(index) {
             let rank
-
             switch (index) {
                 case 0:
                     rank = "Officer Cadet"
@@ -50,13 +52,18 @@ export default function PlayerDetails(playerInformation) {
 
             return rank
         }
+
+        const rankTitle = getRankByIndex(playerInformation.rank)
+
+        setPlayerDetails((prevState) => ({
+            ...prevState,
+            Username: playerInformation.username,
+            XP: playerInformation.playerXP.toString(),
+            Rank: rankTitle,
+        }))
+
+        console.log(JSON.stringify(playerDetails))
     }
-    const rank = rankDisplay(playerInformation.rank)
-
-    const playerArray = []
-
-    playerArray.push(playerInformation.username, playerInformation.playerXP.toString(), rank)
-    setPlayerDetails(playerArray)
 
     return (
         <>

@@ -1,0 +1,49 @@
+# CoCWeb3 Front End
+- [X]login
+- [X]Create new player
+- []Raid page 
+
+## Front End To Do List:
+- [X] New Nextjs project
+
+- [] Home Page
+    - [X] log in button using Web3uikit and moralis  
+    - [X] Create New player button
+    - [X] create new player to disappear when address to username is found
+
+- [] Player Details card
+    - [X] get players details from contract
+    - [X] format the players details. Player rank should be based on miltary ranking
+
+- [] Raid Level 1 Page 
+    - []
+    - []
+    - []
+- []
+- []
+- []
+- []
+- []
+- []
+
+### Design amendements
+
+- [] component to Connect to CoCWeb3 contract then export out data/moralis contract functions to other components
+- [] player details ui component. takes data from getPlayer call and renders the Player Info Card
+
+### Learning excercises
+
+ - [] study the component lifecycles and get better at using useEffect hooks to trigger functions/update UI
+ - []
+ - []
+ - []
+
+
+
+ event listens to user created => update UI 
+    add button to direct to raid screen
+
+if address not recognised divert to index/login screen
+
+
+

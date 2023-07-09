@@ -1,42 +1,32 @@
-import { contractAddresses, abi } from "../constants"
+import { contractAddresses, abi, providerURLs } from "../constants"
 import { useMoralis, useWeb3Contract } from "react-moralis"
-import { useEffect, useState } from "react"
+import { useEffect, useState, Link } from "react"
 import { useNotification } from "web3uikit"
 import { ethers } from "ethers"
-import { useRouter } from "next/router"
-import Link from "next/link"
-import PlayerDetails from "./playerDetailsDisplay"
-import RookieRaid from "./RookieRaid"
-// const {
-//     chainId,
-//     provider,
-//     CoCWeb3Address,
-//     createNewPlayer,
-//     getPlayer,
-// } = require("./contractConnection")
 
-export default function CreateNewPlayer() {
-    const { chainId: chainIdHex, isWeb3Enabled, account } = useMoralis()
-    //instantiate contract
-
-    const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545")
-
+export default function RookieRaid() {
+    //let provider
+    const { chainId: chainIdHex, isWeb3Enabled, account, enableWeb3 } = useMoralis()
     const chainId = parseInt(chainIdHex)
+
+    const providerurl = chainId in providerURLs ? providerURLs[chainId] : null
+
+    const provider = new ethers.providers.JsonRpcProvider(providerurl)
 
     const CoCWeb3Address = chainId in contractAddresses ? contractAddresses[chainId][0] : null
 
     const [playerDetails, setPlayerDetails] = useState({ Username: "", XP: 0, Rank: "" })
-    const [username, setUsername] = useState("")
 
+    // raid button
     const {
-        runContractFunction: createNewPlayer,
+        runContractFunction: lvl1Raid,
         isFetching,
         isLoading,
     } = useWeb3Contract({
         abi: abi,
         contractAddress: CoCWeb3Address,
-        functionName: "createNewPlayer",
-        params: { _name: username },
+        functionName: "performUpkeep",
+        params: { performData: [] },
     })
 
     const { runContractFunction: getPlayer } = useWeb3Contract({
@@ -47,7 +37,6 @@ export default function CreateNewPlayer() {
     })
 
     const getPlayerInfo = async () => {
-        let rankTitle
         const playerInformation = await getPlayer()
 
         function getRankByIndex(index) {
@@ -97,11 +86,7 @@ export default function CreateNewPlayer() {
             return rank
         }
 
-        if (!playerInformation.username) {
-            rankTitle = " "
-        } else {
-            rankTitle = getRankByIndex(playerInformation.rank)
-        }
+        const rankTitle = getRankByIndex(playerInformation.rank)
 
         setPlayerDetails((prevState) => ({
             ...prevState,
@@ -110,7 +95,7 @@ export default function CreateNewPlayer() {
             Rank: rankTitle,
         }))
 
-        console.log(JSON.stringify(playerDetails))
+        //console.log(JSON.stringify(playerDetails))
     }
 
     async function updateUI() {
@@ -119,7 +104,13 @@ export default function CreateNewPlayer() {
 
     const listenEvents = async () => {
         const CoCWeb3 = new ethers.Contract(CoCWeb3Address, abi, provider)
-        CoCWeb3.on("NewPlayerCreated", async (playerAddress, player) => {
+
+        CoCWeb3.on("RaidSuccessful", async (playerAddress) => {
+            console.log("Wallet Address for successfull raid is: ", playerAddress)
+            updateUI()
+        })
+        CoCWeb3.on("RaidUnsuccessful", async (playerAddress) => {
+            console.log("Wallet Address for unsuccessfull raid is: ", playerAddress)
             updateUI()
         })
     }
@@ -139,53 +130,31 @@ export default function CreateNewPlayer() {
         }
     }, [isWeb3Enabled])
 
-    return CoCWeb3Address ? (
+    useEffect(() => {
+        enableWeb3()
+        // if (account) {
+        //     updateUI()
+        // }
+    }, [])
+
+    return (
         <>
-            <h1> </h1>
-            {!playerDetails.Username && (
-                <div className="CreatePlayer">
-                    <h2 className="text-2xl font-bold mb-4">Create New Player</h2>
-                    <form>
-                        <label className="mb-4">
-                            Username:
-                            <input
-                                className="border text-black border-gray-300 rounded px-4 py-2 w-half"
-                                type="text"
-                                value={username}
-                                onChange={(e) => {
-                                    setUsername(e.target.value)
-                                }}
-                            ></input>
-                        </label>
-                    </form>
-                    <button
-                        className="mb-5 mt-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                        onClick={async () => {
-                            await createNewPlayer({
-                                onSuccess: handleSuccess,
-                                onError: (error) => {
-                                    console.log(error)
-                                },
-                            })
-                        }}
-                        disabled={isLoading || isFetching}
+            {/* {!playerDetails.Username && (
+                <div>
+                    <Link
+                        className="border mt-10 px-8 py-2 font-bold rounded-full color-accent-contrast bg-color-accent hover:bg-color-accent-hover-darker"
+                        href="/home"
                     >
-                        Create New Player
-                    </button>
+                        Create New Player or LogIn on home screen
+                    </Link>
                 </div>
-            )}
+            )} */}
             {playerDetails.Username && (
                 <div>
                     <h1 className="mb-10 text-3xl md:text-4xl lg:text-5xl font-bold underline">
-                        Welcome <span className="text-blue-500">{playerDetails.Username}</span>. Are
-                        you ready to play?
+                        Welcome <span className="text-blue-500">{playerDetails.Username}</span>.
+                        Ready to Raid?
                     </h1>
-                    <Link
-                        className="border mt-10 px-8 py-2 font-bold rounded-full color-accent-contrast bg-color-accent hover:bg-color-accent-hover-darker"
-                        href="/RookieRaid"
-                    >
-                        Go to Rookie Raid
-                    </Link>
                     <div className="playerCardContainer flex flex-row">
                         <div className="flex-grow"></div>
                         <div className="w-1/3 bg-blue-300 p-4 rounded-lg shadow-md">
@@ -198,10 +167,22 @@ export default function CreateNewPlayer() {
                             </div>
                         </div>
                     </div>
+                    <button
+                        className="mb-5 mt-10 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                        onClick={async () => {
+                            await lvl1Raid({
+                                onSuccess: handleSuccess,
+                                onError: (error) => {
+                                    console.log(error)
+                                },
+                            })
+                        }}
+                        disabled={isLoading || isFetching}
+                    >
+                        Raid!
+                    </button>
                 </div>
             )}
         </>
-    ) : (
-        <div>Please connect to a supported chain</div>
     )
 }
