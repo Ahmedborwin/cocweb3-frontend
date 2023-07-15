@@ -1,10 +1,15 @@
 import { contractAddresses, abi, providerURLs } from "../constants"
 import { useMoralis, useWeb3Contract } from "react-moralis"
-import { useEffect, useState, Link } from "react"
+import { useEffect, useState } from "react"
 import { useNotification } from "web3uikit"
 import { ethers } from "ethers"
+import Header from "./header"
+import Link from "next/link"
 
 export default function RookieRaid() {
+    let playerInformation
+
+    const dispatch = useNotification()
     //let provider
     const { chainId: chainIdHex, isWeb3Enabled, account, enableWeb3 } = useMoralis()
     const chainId = parseInt(chainIdHex)
@@ -15,7 +20,15 @@ export default function RookieRaid() {
 
     const CoCWeb3Address = chainId in contractAddresses ? contractAddresses[chainId][0] : null
 
-    const [playerDetails, setPlayerDetails] = useState({ Username: "", XP: 0, Rank: "" })
+    const [playerDetails, setPlayerDetails] = useState({
+        Username: "",
+        XP: 0,
+        Rank: "",
+        raidAttempts: 0,
+    }) // player stats
+
+    const [notificationMessage, setNotificationMessage] = useState("")
+    const [notificationTitle, setNotificationTitle] = useState("")
 
     // raid button
     const {
@@ -25,8 +38,16 @@ export default function RookieRaid() {
     } = useWeb3Contract({
         abi: abi,
         contractAddress: CoCWeb3Address,
-        functionName: "performUpkeep",
-        params: { performData: [] },
+        functionName: "performVRFRookieRaid",
+        params: { _player: account },
+    })
+
+    //raid button
+    const { runContractFunction: testRaid } = useWeb3Contract({
+        abi: abi,
+        contractAddress: CoCWeb3Address,
+        functionName: "callRookieRaidTest",
+        params: { _player: account },
     })
 
     const { runContractFunction: getPlayer } = useWeb3Contract({
@@ -37,7 +58,7 @@ export default function RookieRaid() {
     })
 
     const getPlayerInfo = async () => {
-        const playerInformation = await getPlayer()
+        playerInformation = await getPlayer()
 
         function getRankByIndex(index) {
             let rank
@@ -93,9 +114,8 @@ export default function RookieRaid() {
             Username: playerInformation.username,
             XP: playerInformation.playerXP.toString(),
             Rank: rankTitle,
+            raidAttempts: playerInformation.raidAttempts.toString(),
         }))
-
-        //console.log(JSON.stringify(playerDetails))
     }
 
     async function updateUI() {
@@ -104,27 +124,43 @@ export default function RookieRaid() {
 
     const listenEvents = async () => {
         const CoCWeb3 = new ethers.Contract(CoCWeb3Address, abi, provider)
-
         CoCWeb3.on("RaidSuccessful", async (playerAddress) => {
-            console.log("Wallet Address for successfull raid is: ", playerAddress)
-            updateUI()
+            await updateUI()
+            setNotificationMessage("Raid was Successful. You have gained XP")
+            setNotificationTitle("Raid Succesfull")
+            handleNotification()
         })
         CoCWeb3.on("RaidUnsuccessful", async (playerAddress) => {
-            console.log("Wallet Address for unsuccessfull raid is: ", playerAddress)
-            updateUI()
+            await updateUI()
+            setNotificationMessage("Raid was Unsuccessful. You have lost a life")
+            setNotificationTitle("Raid UNSuccesfull")
+            handleNotification()
         })
+        //event for raid attempts
     }
 
     const handleSuccess = async (tx) => {
-        //await tx.wait(1)
-        //handleNotification(tx)
         updateUI()
     }
 
-    const handleNotification = () => {}
+    const handleNotification = () => {
+        dispatch({
+            type: "info",
+            message: notificationMessage,
+            title: notificationTitle,
+            position: "topR",
+            icon: "check",
+        })
+    }
 
     useEffect(() => {
         if (isWeb3Enabled) {
+            // ;async () => {
+            //     // Your asynchronous code here
+            //     // playerInformation = await getPlayer()
+            //     // const data = await playerInformation.json()
+            //     // console.log(data)
+            // }
             updateUI()
             listenEvents()
         }
@@ -132,57 +168,70 @@ export default function RookieRaid() {
 
     useEffect(() => {
         enableWeb3()
-        // if (account) {
-        //     updateUI()
-        // }
     }, [])
 
     return (
-        <>
-            {/* {!playerDetails.Username && (
-                <div>
-                    <Link
-                        className="border mt-10 px-8 py-2 font-bold rounded-full color-accent-contrast bg-color-accent hover:bg-color-accent-hover-darker"
-                        href="/home"
-                    >
-                        Create New Player or LogIn on home screen
-                    </Link>
-                </div>
-            )} */}
-            {playerDetails.Username && (
-                <div>
-                    <h1 className="mb-10 text-3xl md:text-4xl lg:text-5xl font-bold underline">
-                        Welcome <span className="text-blue-500">{playerDetails.Username}</span>.
-                        Ready to Raid?
-                    </h1>
-                    <div className="playerCardContainer flex flex-row">
-                        <div className="flex-grow"></div>
-                        <div className="w-1/3 bg-blue-300 p-4 rounded-lg shadow-md">
-                            <div className="flex flex-col justify-start items-end">
-                                <span className="text-gray-700">
-                                    Username: {playerDetails.Username}
-                                </span>
-                                <span className="text-gray-700">XP: {playerDetails.XP}</span>
-                                <span className="text-gray-700">Rank: {playerDetails.Rank}</span>
+        <div className="container my-24 mx-auto md:px-6">
+            <section className="mb-32">
+                <div className="relative overflow-hidden bg-cover bg-no-repeat bg-[50%] bg-[url(/images/ChineseThemedBackground.png)] h-[500px]">
+                    <Header />
+                    <div className="w-1/3  text-white text-sm font-bold p-4 bg-[hsla(0,0%,0%,0.70)] rounded-lg shadow-md sm:text-base sm:text-xs">
+                        <div class="grid grid-cols-2">
+                            <div class="p-4 border border-gray-500">Username:</div>
+                            <div class="p-4 border border-gray-500">{playerDetails.Username}</div>
+                            <div class="p-4 border border-gray-500">XP</div>
+                            <div class="p-4 border border-gray-500">{playerDetails.XP}</div>
+                            <div class="p-4 border border-gray-500">Rank</div>
+                            <div class="p-4 border border-gray-500">{playerDetails.Rank}</div>
+                            <div class="p-4 border border-gray-500">Lives</div>
+                            <div class="p-4 border border-gray-500">
+                                {playerDetails.raidAttempts}
                             </div>
                         </div>
                     </div>
-                    <button
-                        className="mb-5 mt-10 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                        onClick={async () => {
-                            await lvl1Raid({
-                                onSuccess: handleSuccess,
-                                onError: (error) => {
-                                    console.log(error)
-                                },
-                            })
-                        }}
-                        disabled={isLoading || isFetching}
-                    >
-                        Raid!
-                    </button>
+                    <div className="absolute top-0 right-0 bottom-0 left-0 h-full w-full overflow-hidden bg-[hsla(0,0%,0%,0.45)] bg-fixed">
+                        <div className="absolute top-8 right-0 bottom-0 left-20 h-full w-full overflow-hidden bg-fixed">
+                            <div className="flex h-full items-center justify-center">
+                                <div className="px-6 text-center text-white md:px-12">
+                                    <h2 className="mb-12 text-5xl font-bold leading-tight tracking-tight">
+                                        Are you ready <br />
+                                        <span>for an adventure?</span>
+                                    </h2>
+                                    <button
+                                        type="button"
+                                        className="rounded border-2 border-neutral-50 px-[46px] pt-[14px] pb-[12px] text-sm font-medium uppercase leading-normal text-neutral-50 transition duration-150 ease-in-out hover:border-neutral-100 hover:bg-neutral-100 hover:bg-opacity-10 hover:text-neutral-100 focus:border-neutral-100 focus:text-neutral-100 focus:outline-none focus:ring-0 active:border-neutral-200 active:text-neutral-200"
+                                        data-te-ripple-init
+                                        data-te-ripple-color="light"
+                                        onClick={async () => {
+                                            await lvl1Raid({
+                                                onSuccess: handleSuccess,
+                                                onError: (error) => {
+                                                    console.log(error)
+                                                },
+                                            })
+                                        }}
+                                        disabled={isLoading || isFetching}
+                                    >
+                                        Raid
+                                    </button>
+                                    <div className="mt-10">
+                                        <Link href="/home">
+                                            <button
+                                                type="button"
+                                                className="rounded border-2 border-neutral-50 px-[46px] pt-[14px] pb-[12px] text-sm font-medium uppercase leading-normal text-neutral-50 transition duration-150 ease-in-out hover:border-neutral-100 hover:bg-neutral-100 hover:bg-opacity-10 hover:text-neutral-100 focus:border-neutral-100 focus:text-neutral-100 focus:outline-none focus:ring-0 active:border-neutral-200 active:text-neutral-200"
+                                                data-te-ripple-init
+                                                data-te-ripple-color="light"
+                                            >
+                                                Back to Home Page
+                                            </button>
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            )}
-        </>
+            </section>
+        </div>
     )
 }
