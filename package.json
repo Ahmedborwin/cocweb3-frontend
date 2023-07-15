@@ -25,6 +25,7 @@
     "web3uikit": "^1.0.4"
   },
   "devDependencies": {
+    "eslint": "^8.45.0",
     "tw-elements": "^1.0.0-beta2"
   }
 }
