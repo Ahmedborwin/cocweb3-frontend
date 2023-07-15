@@ -171,6 +171,7 @@ export default function Lair() {
 
     return CoCWeb3Address ? (
         <div>
+            <Header />
             {!playerDetails.Username && (
                 <div
                     id="createPlayer-background-container"

@@ -4,7 +4,7 @@ import RookieRaid from "../components/RookieRaid"
 
 const inter = Inter({ subsets: ["latin"] })
 
-export default function Home() {
+export default function RookieRaidPage() {
     return (
         <div>
             <RookieRaid />

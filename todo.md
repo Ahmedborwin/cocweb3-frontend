@@ -48,18 +48,6 @@
 
 
 
-### Design amendements
-
-- [] component to Connect to CoCWeb3 contract then export out data/moralis contract functions to other components
-- [] players details component. Component such as RookieRaid with connection to contract can make the call then pass playerinfo to componenet to render player stats. Couldnt get this to work for me
-- [] Handle Reverts and notify player of revert reason. How can i access the revert reason from app? or do i have to use events for all custom errors?
-
-### Learning excercises
-
- - [] study the component lifecycles and get better at using useEffect hooks to trigger functions/update UI
- - [] Practise tailwind css 
- - [] learn to use notification libraries better such as web3uikit and tailwinds own notification options
- - []
 
 
 
