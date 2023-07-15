@@ -6,7 +6,7 @@ import Link from "next/link"
 export default function NavBar() {
     return (
         <div>
-            <div class="top-0 left-0 bg-gray-200 p-4 flex flex-row w-2/3 ">
+            <div class="top-0 left-0 bg-gray-200 p-4 flex flex-row w-1/2 ">
                 <Link href="/">
                     <button class="w-full py-2 px-4 text-gray-700 font-bold underline shadow-md hover:shadow-xl transition duration-300">
                         Home

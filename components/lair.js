@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useNotification } from "web3uikit"
 import { ethers } from "ethers"
 import NavBar from "./NavBar"
+import Header from "./header"
 
 export default function Lair() {
     const { chainId: chainIdHex, isWeb3Enabled, account, enableWeb3 } = useMoralis()
@@ -171,7 +172,6 @@ export default function Lair() {
 
     return CoCWeb3Address ? (
         <div>
-            <Header />
             {!playerDetails.Username && (
                 <div
                     id="createPlayer-background-container"
@@ -217,7 +217,9 @@ export default function Lair() {
             )}
             {playerDetails.Username && (
                 <div>
+                    <Header />
                     <NavBar />
+
                     <div>
                         <h2 className="mb-10 mt-10 text-3xl md:text-4xl lg:text-5xl font-bold underline">
                             Welcome <span className="text-blue-500">{playerDetails.Username}</span>.

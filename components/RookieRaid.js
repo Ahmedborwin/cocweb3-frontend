@@ -174,7 +174,6 @@ export default function RookieRaid() {
         <div className="container my-24 mx-auto md:px-6">
             <section className="mb-32">
                 <div className="relative overflow-hidden bg-cover bg-no-repeat bg-[50%] bg-[url(/images/ChineseThemedBackground.png)] h-[500px]">
-                    <Header />
                     <div className="w-1/3  text-white text-sm font-bold p-4 bg-[hsla(0,0%,0%,0.70)] rounded-lg shadow-md sm:text-base sm:text-xs">
                         <div class="grid grid-cols-2">
                             <div class="p-4 border border-gray-500">Username:</div>
@@ -215,7 +214,7 @@ export default function RookieRaid() {
                                         Raid
                                     </button>
                                     <div className="mt-10">
-                                        <Link href="/home">
+                                        <Link href="/">
                                             <button
                                                 type="button"
                                                 className="rounded border-2 border-neutral-50 px-[46px] pt-[14px] pb-[12px] text-sm font-medium uppercase leading-normal text-neutral-50 transition duration-150 ease-in-out hover:border-neutral-100 hover:bg-neutral-100 hover:bg-opacity-10 hover:text-neutral-100 focus:border-neutral-100 focus:text-neutral-100 focus:outline-none focus:ring-0 active:border-neutral-200 active:text-neutral-200"
