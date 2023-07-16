@@ -3,7 +3,6 @@ import { useMoralis, useWeb3Contract } from "react-moralis"
 import { useEffect, useState } from "react"
 import { useNotification } from "web3uikit"
 import { ethers } from "ethers"
-import NavBar from "./NavBar"
 import Header from "./header"
 
 export default function Lair() {
@@ -218,7 +217,6 @@ export default function Lair() {
             {playerDetails.Username && (
                 <div>
                     <Header />
-                    <NavBar />
 
                     <div>
                         <h2 className="mb-10 mt-10 text-3xl md:text-4xl lg:text-5xl font-bold underline">

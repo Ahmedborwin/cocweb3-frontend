@@ -171,19 +171,21 @@ export default function RookieRaid() {
     }, [])
 
     return (
-        <div className="container my-24 mx-auto md:px-6">
-            <section className="mb-32">
+        <div className="container my-12 mx-auto md:px-6">
+            <section>
                 <div className="relative overflow-hidden bg-cover bg-no-repeat bg-[50%] bg-[url(/images/ChineseThemedBackground.png)] h-[500px]">
                     <div className="w-1/3  text-white text-sm font-bold p-4 bg-[hsla(0,0%,0%,0.70)] rounded-lg shadow-md sm:text-base sm:text-xs">
-                        <div class="grid grid-cols-2">
-                            <div class="p-4 border border-gray-500">Username:</div>
-                            <div class="p-4 border border-gray-500">{playerDetails.Username}</div>
-                            <div class="p-4 border border-gray-500">XP</div>
-                            <div class="p-4 border border-gray-500">{playerDetails.XP}</div>
-                            <div class="p-4 border border-gray-500">Rank</div>
-                            <div class="p-4 border border-gray-500">{playerDetails.Rank}</div>
-                            <div class="p-4 border border-gray-500">Lives</div>
-                            <div class="p-4 border border-gray-500">
+                        <div className="grid grid-cols-2">
+                            <div className="p-4 border border-gray-500">Username:</div>
+                            <div className="p-4 border border-gray-500">
+                                {playerDetails.Username}
+                            </div>
+                            <div className="p-4 border border-gray-500">XP</div>
+                            <div className="p-4 border border-gray-500">{playerDetails.XP}</div>
+                            <div className="p-4 border border-gray-500">Rank</div>
+                            <div className="p-4 border border-gray-500">{playerDetails.Rank}</div>
+                            <div className="p-4 border border-gray-500">Lives</div>
+                            <div className="p-4 border border-gray-500">
                                 {playerDetails.raidAttempts}
                             </div>
                         </div>
