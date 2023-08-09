@@ -1,53 +1,50 @@
-# CoCWeb3 Front End
-- [X]login
-- [X]Create new player
-- []Raid page 
-
-## Front End To Do List:
-- [X] New Nextjs project
-
-- [] Home Page
-    - [X] log in button using Web3uikit and moralis  
-    - [X] Create New player button
-    - [X] Player details only renders if address recognised
-    - [X] Main Menu screen when address recognised
-    - [X] button to direct to raid URL screen/path
-    - [X] event, notifications and auto UI update
-        -[] New player created
-        -[] raid succesfull
-        -[] raid unsuccessfull
 
 
 
-- [X] Player Details card
-    - [X] get players details from contract
-    - [X] format the players details
-        - [X] Player rank should be based on miltary ranking
-        - [X] grid to display player Info
+# Nav Bar
 
-- [X] Add nav bar with buttons:
-    - [X] Home 
-    - [X] Armory
-    - [X] About game
-    - [X] Developer portfolio page
+- [] improve buttons
+- [] how can i make the navbar better without spending money on tailwind components? 
+- []
 
-- [] Raid Screens
-    - [] Rookie Raid
-    - [] Expert Raid
-    - [] Team Raid
-
-- [] Raid Level 1 Page
-
-    - [X] Check if address connected to a username if not button to go back to home page)
-    - [X] create images using AI and add to Raid Page
-    - [] getPlayer call to complete before trying to render the player. 
-        //Unable to replecate this issue
-    - [X] Button to raid
+# Index page
+- [] auto update Loot address + abi on Loot contract deployment
+- []
+- []
+- []
 
 
 
+# Armory
+
+- [X] create seperate armory page
+- [X] connect to game contract
+- [X] connect to loot contract
+- [X] call function to get lootURI list for player
+- [X]  card component to parse tokenURI object and display nft 
+- [X]  component to display all card nfts owned by player
+    - [] improve UI of this
+    - [x] fix bug when new NFT is created
+- [] New loot NFT event triggers calling of URIlist function again and UI update
+- [] filter to unique loot + add count of tokens owned to the NFT UI
+- []
+- []
+
+# Rookie Raid
+- [] 
+
+# player details component
+- [] create this and import into existing pages/components
+- [] add rank nft to UI
+- [] improve player stats grid - trying to use NftCard from web3uikit but unable to import. use moralis somehow?
 
 
+# Tests
+- [] add test rookie raid button to a screen
+- [] 
 
 
-
+# Thoughts
+- [] can i split lair and rookie raid into smaller components that i can reuse now or in the future?
+- [] What can i use a modal view for?
+- [] review web3uikit to see what else i can use? 

@@ -1,10 +1,4 @@
-import {
-    GamecontractAddress,
-    Gameabi,
-    providerURLs,
-    LootcontractAddress,
-    Lootabi,
-} from "../constants/index"
+import { GamecontractAddress, Gameabi, providerURLs } from "../constants"
 import { useMoralis, useWeb3Contract } from "react-moralis"
 import { useEffect, useState } from "react"
 import { useNotification } from "web3uikit"
@@ -41,7 +35,7 @@ export default function RookieRaid() {
         isFetching,
         isLoading,
     } = useWeb3Contract({
-        abi: Gameabi,
+        Gameabi: Gameabi,
         contractAddress: CoCWeb3Address,
         functionName: "performVRFRookieRaid",
         params: { _player: account },
@@ -49,14 +43,14 @@ export default function RookieRaid() {
 
     //raid button
     const { runContractFunction: testRaid } = useWeb3Contract({
-        abi: Gameabi,
+        Gameabi: Gameabi,
         contractAddress: CoCWeb3Address,
         functionName: "callRookieRaidTest",
         params: { _player: account },
     })
 
     const { runContractFunction: getPlayer } = useWeb3Contract({
-        abi: Gameabi,
+        Gameabi: Gameabi,
         contractAddress: CoCWeb3Address,
         functionName: "getPlayer",
         params: { _player: account },

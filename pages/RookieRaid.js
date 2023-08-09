@@ -1,13 +1,13 @@
 import { Inter } from "next/font/google"
 import RookieRaid from "../components/RookieRaid"
-import NavBar from "@/components/NavBar"
+import Header from "@/components/Navbar"
 
 const inter = Inter({ subsets: ["latin"] })
 
 export default function RookieRaidPage() {
     return (
         <div>
-            <NavBar />
+            <Header />
             <RookieRaid />
         </div>
     )

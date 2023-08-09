@@ -1,15 +1,15 @@
 import { Inter } from "next/font/google"
 import { useRouter } from "next/router"
 import Header from "../components/Navbar"
-import Lair from "../components/lair"
+import ArmoryComponent from "/components/ArmoryComponent"
 
 const inter = Inter({ subsets: ["latin"] })
 
-export default function Index() {
+export default function Armory() {
     return (
         <div>
             <Header />
-            <Lair />
+            <ArmoryComponent />
         </div>
     )
 }

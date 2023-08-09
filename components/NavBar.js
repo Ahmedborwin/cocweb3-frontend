@@ -1,30 +1,19 @@
+import WalletConnectButton from "./walletconnectbutton"
 import Link from "next/link"
 
-export default function NavBar() {
+export default function Header() {
     return (
-        <div>
-            <div className="top-0 left-0 bg-gray-200 p-4 flex flex-row w-1/2 ">
-                <Link href="/">
-                    <button className="w-full py-2 px-4 text-gray-700 font-bold underline shadow-md hover:shadow-xl transition duration-300">
-                        Home
-                    </button>
+        <nav className="p-5 border-b-2 flex flex-row justify-between items-center">
+            <h1 className="py-4 px-4 font-bold text-3xl">Code of Conflict</h1>
+            <div className="flex flex-row items-center">
+                <Link className="mr-4 p-6" href="/">
+                    Home
                 </Link>
-                <Link href="/armory">
-                    <button className="w-full py-2 px-4 text-gray-700 font-bold underline shadow-md hover:shadow-xl transition duration-300">
-                        Armory
-                    </button>
+                <Link className="mr-4 p-6" href="/Armory">
+                    Armory
                 </Link>
-                <Link href="/about">
-                    <button className="w-full py-2 px-4 text-gray-700 font-bold underline shadow-md hover:shadow-xl transition duration-300">
-                        About Game
-                    </button>
-                </Link>
-                <Link href="/dev-corner">
-                    <button className="w-full py-2 px-4 text-gray-700 font-bold underline shadow-md hover:shadow-xl transition duration-300">
-                        Dev Corner
-                    </button>
-                </Link>
+                <WalletConnectButton />
             </div>
-        </div>
+        </nav>
     )
 }

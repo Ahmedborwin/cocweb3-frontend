@@ -1,0 +1,405 @@
+[
+    {
+        "type": "constructor",
+        "payable": false,
+        "inputs": [
+            { "type": "address", "name": "vrfCoordinatorV2" },
+            { "type": "uint64", "name": "subscriptionId" },
+            { "type": "bytes32", "name": "gasLane" },
+            { "type": "uint32", "name": "callbackGasLimit" },
+            { "type": "string[5]", "name": "_s_LootTokenUris" }
+        ]
+    },
+    { "type": "error", "name": "CoCLootNft__AlreadyInitialized", "inputs": [] },
+    { "type": "error", "name": "CoCLootNft__RangeOutOfBounds", "inputs": [] },
+    {
+        "type": "error",
+        "name": "OnlyCoordinatorCanFulfill",
+        "inputs": [
+            { "type": "address", "name": "have" },
+            { "type": "address", "name": "want" }
+        ]
+    },
+    {
+        "type": "event",
+        "anonymous": false,
+        "name": "AllTokenUrisbyAddress",
+        "inputs": [
+            { "type": "string[]", "name": "tokenUris", "indexed": true },
+            { "type": "address", "name": "player", "indexed": true }
+        ]
+    },
+    {
+        "type": "event",
+        "anonymous": false,
+        "name": "Approval",
+        "inputs": [
+            { "type": "address", "name": "owner", "indexed": true },
+            { "type": "address", "name": "approved", "indexed": true },
+            { "type": "uint256", "name": "tokenId", "indexed": true }
+        ]
+    },
+    {
+        "type": "event",
+        "anonymous": false,
+        "name": "ApprovalForAll",
+        "inputs": [
+            { "type": "address", "name": "owner", "indexed": true },
+            { "type": "address", "name": "operator", "indexed": true },
+            { "type": "bool", "name": "approved", "indexed": false }
+        ]
+    },
+    {
+        "type": "event",
+        "anonymous": false,
+        "name": "LootNftMinted",
+        "inputs": [
+            { "type": "uint256", "name": "tokenId", "indexed": true },
+            { "type": "address", "name": "player", "indexed": true },
+            { "type": "address", "name": "nftAddress", "indexed": true }
+        ]
+    },
+    {
+        "type": "event",
+        "anonymous": false,
+        "name": "OwnershipTransferred",
+        "inputs": [
+            { "type": "address", "name": "previousOwner", "indexed": true },
+            { "type": "address", "name": "newOwner", "indexed": true }
+        ]
+    },
+    {
+        "type": "event",
+        "anonymous": false,
+        "name": "Transfer",
+        "inputs": [
+            { "type": "address", "name": "from", "indexed": true },
+            { "type": "address", "name": "to", "indexed": true },
+            { "type": "uint256", "name": "tokenId", "indexed": true }
+        ]
+    },
+    {
+        "type": "event",
+        "anonymous": false,
+        "name": "lootWheelSpin",
+        "inputs": [
+            { "type": "uint256", "name": "requestId", "indexed": true },
+            { "type": "address", "name": "player", "indexed": true }
+        ]
+    },
+    {
+        "type": "event",
+        "anonymous": false,
+        "name": "unSuccesfullSpin",
+        "inputs": [{ "type": "address", "name": "player", "indexed": true }]
+    },
+    {
+        "type": "function",
+        "name": "LootWheelSpinFromGameContract",
+        "constant": false,
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [
+            { "type": "address", "name": "_player" },
+            { "type": "uint256", "name": "_randomNumber" }
+        ],
+        "outputs": []
+    },
+    {
+        "type": "function",
+        "name": "approve",
+        "constant": false,
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [
+            { "type": "address", "name": "to" },
+            { "type": "uint256", "name": "tokenId" }
+        ],
+        "outputs": []
+    },
+    {
+        "type": "function",
+        "name": "balanceOf",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [{ "type": "address", "name": "owner" }],
+        "outputs": [{ "type": "uint256" }]
+    },
+    {
+        "type": "function",
+        "name": "getApproved",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [{ "type": "uint256", "name": "tokenId" }],
+        "outputs": [{ "type": "address" }]
+    },
+    {
+        "type": "function",
+        "name": "getLootTokenUris",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [{ "type": "uint256", "name": "index" }],
+        "outputs": [{ "type": "string" }]
+    },
+    {
+        "type": "function",
+        "name": "getNftsOwnedbyPlayer",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [{ "type": "address", "name": "player" }],
+        "outputs": [{ "type": "string[]" }]
+    },
+    {
+        "type": "function",
+        "name": "getPlayerfroms_requestIdToSender",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [{ "type": "uint256", "name": "requestId" }],
+        "outputs": [{ "type": "address" }]
+    },
+    {
+        "type": "function",
+        "name": "getTokenCounter",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [{ "type": "uint256" }]
+    },
+    {
+        "type": "function",
+        "name": "getTokenURIfromPlayerId",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [
+            { "type": "address", "name": "player" },
+            { "type": "uint256", "name": "tokenId" }
+        ],
+        "outputs": [{ "type": "string" }]
+    },
+    {
+        "type": "function",
+        "name": "isApprovedForAll",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [
+            { "type": "address", "name": "owner" },
+            { "type": "address", "name": "operator" }
+        ],
+        "outputs": [{ "type": "bool" }]
+    },
+    {
+        "type": "function",
+        "name": "name",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [{ "type": "string" }]
+    },
+    {
+        "type": "function",
+        "name": "owner",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [{ "type": "address" }]
+    },
+    {
+        "type": "function",
+        "name": "ownerOf",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [{ "type": "uint256", "name": "tokenId" }],
+        "outputs": [{ "type": "address" }]
+    },
+    {
+        "type": "function",
+        "name": "rawFulfillRandomWords",
+        "constant": false,
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [
+            { "type": "uint256", "name": "requestId" },
+            { "type": "uint256[]", "name": "randomWords" }
+        ],
+        "outputs": []
+    },
+    {
+        "type": "function",
+        "name": "renounceOwnership",
+        "constant": false,
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": []
+    },
+    {
+        "type": "function",
+        "name": "s_addressToAllTokenURIs",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [{ "type": "address" }, { "type": "uint256" }],
+        "outputs": [{ "type": "string" }]
+    },
+    {
+        "type": "function",
+        "name": "s_addressToTokenURI",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [{ "type": "address" }, { "type": "uint256" }],
+        "outputs": [{ "type": "string" }]
+    },
+    {
+        "type": "function",
+        "name": "s_requestIdToSender",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [{ "type": "uint256" }],
+        "outputs": [{ "type": "address" }]
+    },
+    {
+        "type": "function",
+        "name": "safeTransferFrom",
+        "constant": false,
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [
+            { "type": "address", "name": "from" },
+            { "type": "address", "name": "to" },
+            { "type": "uint256", "name": "tokenId" }
+        ],
+        "outputs": []
+    },
+    {
+        "type": "function",
+        "name": "safeTransferFrom",
+        "constant": false,
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [
+            { "type": "address", "name": "from" },
+            { "type": "address", "name": "to" },
+            { "type": "uint256", "name": "tokenId" },
+            { "type": "bytes", "name": "_data" }
+        ],
+        "outputs": []
+    },
+    {
+        "type": "function",
+        "name": "setApprovalForAll",
+        "constant": false,
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [
+            { "type": "address", "name": "operator" },
+            { "type": "bool", "name": "approved" }
+        ],
+        "outputs": []
+    },
+    {
+        "type": "function",
+        "name": "setNewOwner",
+        "constant": false,
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [{ "type": "address", "name": "_newOwner" }],
+        "outputs": []
+    },
+    {
+        "type": "function",
+        "name": "setTestNrg",
+        "constant": false,
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [{ "type": "uint256", "name": "_nrgSet" }],
+        "outputs": []
+    },
+    {
+        "type": "function",
+        "name": "spinWheelRequestNRG",
+        "constant": false,
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [{ "type": "address", "name": "_player" }],
+        "outputs": [{ "type": "uint256", "name": "requestId" }]
+    },
+    {
+        "type": "function",
+        "name": "supportsInterface",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [{ "type": "bytes4", "name": "interfaceId" }],
+        "outputs": [{ "type": "bool" }]
+    },
+    {
+        "type": "function",
+        "name": "symbol",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [],
+        "outputs": [{ "type": "string" }]
+    },
+    {
+        "type": "function",
+        "name": "tokenURI",
+        "constant": true,
+        "stateMutability": "view",
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [{ "type": "uint256", "name": "tokenId" }],
+        "outputs": [{ "type": "string" }]
+    },
+    {
+        "type": "function",
+        "name": "transferFrom",
+        "constant": false,
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [
+            { "type": "address", "name": "from" },
+            { "type": "address", "name": "to" },
+            { "type": "uint256", "name": "tokenId" }
+        ],
+        "outputs": []
+    },
+    {
+        "type": "function",
+        "name": "transferOwnership",
+        "constant": false,
+        "payable": false,
+        "gas": 29000000,
+        "inputs": [{ "type": "address", "name": "newOwner" }],
+        "outputs": []
+    }
+]
