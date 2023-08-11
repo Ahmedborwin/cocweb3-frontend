@@ -10,6 +10,8 @@ import { useEffect, useState } from "react"
 import { useNotification } from "web3uikit"
 import { ethers } from "ethers"
 import Link from "next/link"
+import PlayerDetails from "./payerDetails"
+import RaidModal from "./RaidModal"
 
 export default function RookieRaid() {
     let playerInformation
@@ -34,6 +36,8 @@ export default function RookieRaid() {
 
     const [notificationMessage, setNotificationMessage] = useState("")
     const [notificationTitle, setNotificationTitle] = useState("")
+    const [showModal, setShowModal] = useState(false)
+    const hideModal = () => setShowModal(false)
 
     // raid button
     const {
@@ -55,76 +59,8 @@ export default function RookieRaid() {
         params: { _player: account },
     })
 
-    const { runContractFunction: getPlayer } = useWeb3Contract({
-        abi: Gameabi,
-        contractAddress: CoCWeb3Address,
-        functionName: "getPlayer",
-        params: { _player: account },
-    })
-
-    const getPlayerInfo = async () => {
-        playerInformation = await getPlayer()
-
-        function getRankByIndex(index) {
-            let rank
-            switch (index) {
-                case 0:
-                    rank = "Officer Cadet"
-                    break
-                case 1:
-                    rank = "Second Lieutenant"
-                    break
-                case 2:
-                    rank = "Lieutenant"
-                    break
-                case 3:
-                    rank = "Captain"
-                    break
-                case 4:
-                    rank = "Major"
-                    break
-                case 5:
-                    rank = "Lieutenant Colonel"
-                    break
-                case 6:
-                    rank = "Colonel"
-                    break
-                case 7:
-                    rank = "Brigadier"
-                    break
-                case 8:
-                    rank = "Major General"
-                    break
-                case 9:
-                    rank = "Lieutenant General"
-                    break
-                case 10:
-                    rank = "General"
-                    break
-                case 11:
-                    rank = "Field Marshal"
-                    break
-                default:
-                    rank = "Invalid index"
-                    break
-            }
-
-            return rank
-        }
-
-        const rankTitle = getRankByIndex(playerInformation.rank)
-
-        setPlayerDetails((prevState) => ({
-            ...prevState,
-            Username: playerInformation.username,
-            XP: playerInformation.playerXP.toString(),
-            Rank: rankTitle,
-            raidAttempts: playerInformation.raidAttempts.toString(),
-        }))
-    }
-
     async function updateUI() {
-        await getPlayerInfo()
+        // how can i refresh the playerdetails component from here?
     }
 
     const listenEvents = async () => {
@@ -133,13 +69,14 @@ export default function RookieRaid() {
             await updateUI()
             setNotificationMessage("Raid was Successful. You have gained XP")
             setNotificationTitle("Raid Succesfull")
-            handleNotification()
+            setShowModal(true)
         })
         CoCWeb3.on("RaidUnsuccessful", async (playerAddress) => {
             await updateUI()
             setNotificationMessage("Raid was Unsuccessful. You have lost a life")
             setNotificationTitle("Raid UNSuccesfull")
             handleNotification()
+            setShowModal(true)
         })
         //event for raid attempts
     }
@@ -159,85 +96,76 @@ export default function RookieRaid() {
     }
 
     useEffect(() => {
+        enableWeb3()
+    }, [])
+    useEffect(() => {
         if (isWeb3Enabled) {
-            // ;async () => {
-            //     // Your asynchronous code here
-            //     // playerInformation = await getPlayer()
-            //     // const data = await playerInformation.json()
-            //     // console.log(data)
-            // }
             updateUI()
             listenEvents()
         }
     }, [isWeb3Enabled])
 
-    useEffect(() => {
-        enableWeb3()
-    }, [])
-
     return (
-        <div className="container my-12 mx-auto md:px-6">
-            <section>
-                <div className="relative overflow-hidden bg-cover bg-no-repeat bg-[50%] bg-[url(/images/ChineseThemedBackground.png)] h-[500px]">
-                    <div className="w-1/3  text-white text-sm font-bold p-4 bg-[hsla(0,0%,0%,0.70)] rounded-lg shadow-md sm:text-base sm:text-xs">
-                        <div className="grid grid-cols-2">
-                            <div className="p-4 border border-gray-500">Username:</div>
-                            <div className="p-4 border border-gray-500">
-                                {playerDetails.Username}
+        <div>
+            {showModal ? (
+                <div>
+                    <RaidModal onClose={hideModal} isVisible={showModal} />
+                </div>
+            ) : (
+                <div>
+                    <div className="relative overflow-hidden bg-cover bg-no-repeat bg-[50%] bg-[url(/images/ChineseThemedBackground.png)] h-[500px]">
+                        <div className="flex">
+                            <div id="playerDetailsCard" className=" w-1/3 px-7">
+                                <PlayerDetails rankNeeded={true} />
                             </div>
-                            <div className="p-4 border border-gray-500">XP</div>
-                            <div className="p-4 border border-gray-500">{playerDetails.XP}</div>
-                            <div className="p-4 border border-gray-500">Rank</div>
-                            <div className="p-4 border border-gray-500">{playerDetails.Rank}</div>
-                            <div className="p-4 border border-gray-500">Lives</div>
-                            <div className="p-4 border border-gray-500">
-                                {playerDetails.raidAttempts}
-                            </div>
-                        </div>
-                    </div>
-                    <div className="absolute top-0 right-0 bottom-0 left-0 h-full w-full overflow-hidden bg-[hsla(0,0%,0%,0.45)] bg-fixed">
-                        <div className="absolute top-8 right-0 bottom-0 left-20 h-full w-full overflow-hidden bg-fixed">
-                            <div className="flex h-full items-center justify-center">
-                                <div className="px-6 text-center text-white md:px-12">
-                                    <h2 className="mb-12 text-5xl font-bold leading-tight tracking-tight">
-                                        Are you ready <br />
-                                        <span>for an adventure?</span>
-                                    </h2>
-                                    <button
-                                        type="button"
-                                        className="rounded border-2 border-neutral-50 px-[46px] pt-[14px] pb-[12px] text-sm font-medium uppercase leading-normal text-neutral-50 transition duration-150 ease-in-out hover:border-neutral-100 hover:bg-neutral-100 hover:bg-opacity-10 hover:text-neutral-100 focus:border-neutral-100 focus:text-neutral-100 focus:outline-none focus:ring-0 active:border-neutral-200 active:text-neutral-200"
-                                        data-te-ripple-init
-                                        data-te-ripple-color="light"
-                                        onClick={async () => {
-                                            await lvl1Raid({
-                                                onSuccess: handleSuccess,
-                                                onError: (error) => {
-                                                    console.log(error)
-                                                },
-                                            })
-                                        }}
-                                        disabled={isLoading || isFetching}
-                                    >
-                                        Raid
-                                    </button>
-                                    <div className="mt-10">
-                                        <Link href="/">
+                            <div
+                                id="rookieRaidCTA"
+                                className=" w-1/2 absolute top-0 right-0 bottom-0 left-0 h-full w-full bg-[hsla(0,0%,0%,0.45)] bg-fixed"
+                            >
+                                <div className="absolute top-8 right-0 bottom-0 left-20 h-full w-full overflow-hidden bg-fixed">
+                                    <div className="flex h-full items-center justify-center">
+                                        <div className="px-6 text-center text-white md:px-12">
+                                            <h2 className="mb-12 text-5xl font-bold leading-tight tracking-tight">
+                                                Are you ready <br />
+                                                <span>for an adventure?</span>
+                                            </h2>
                                             <button
                                                 type="button"
                                                 className="rounded border-2 border-neutral-50 px-[46px] pt-[14px] pb-[12px] text-sm font-medium uppercase leading-normal text-neutral-50 transition duration-150 ease-in-out hover:border-neutral-100 hover:bg-neutral-100 hover:bg-opacity-10 hover:text-neutral-100 focus:border-neutral-100 focus:text-neutral-100 focus:outline-none focus:ring-0 active:border-neutral-200 active:text-neutral-200"
                                                 data-te-ripple-init
                                                 data-te-ripple-color="light"
+                                                onClick={async () => {
+                                                    await lvl1Raid({
+                                                        onSuccess: handleSuccess,
+                                                        onError: (error) => {
+                                                            console.log(error)
+                                                        },
+                                                    })
+                                                }}
+                                                disabled={isLoading || isFetching}
                                             >
-                                                Back to Home Page
+                                                Raid
                                             </button>
-                                        </Link>
+                                            <div className="mt-10">
+                                                <Link href="/">
+                                                    <button
+                                                        type="button"
+                                                        className="rounded border-2 border-neutral-50 px-[46px] pt-[14px] pb-[12px] text-sm font-medium uppercase leading-normal text-neutral-50 transition duration-150 ease-in-out hover:border-neutral-100 hover:bg-neutral-100 hover:bg-opacity-10 hover:text-neutral-100 focus:border-neutral-100 focus:text-neutral-100 focus:outline-none focus:ring-0 active:border-neutral-200 active:text-neutral-200"
+                                                        data-te-ripple-init
+                                                        data-te-ripple-color="light"
+                                                    >
+                                                        Back to Home Page
+                                                    </button>
+                                                </Link>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </section>
+            )}
         </div>
     )
 }

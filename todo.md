@@ -8,8 +8,7 @@
 - []
 
 # Index page
-- [] auto update Loot address + abi on Loot contract deployment
-- []
+- [] scroll up/down to view full back ground image
 - []
 - []
 
@@ -26,12 +25,12 @@
     - [] improve UI of this
     - [x] fix bug when new NFT is created
 - [] New loot NFT event triggers calling of URIlist function again and UI update
-- [] filter to unique loot + add count of tokens owned to the NFT UI
-- []
+- [X] filter to unique loot + add count of tokens owned to the NFT UI
+- [] send player back to home screen if address not recognised.. but how?
 - []
 
 # Rookie Raid
-- [] 
+- [] send player back to home screen if address not recognised.. but how?
 
 # player details component
 - [] create this and import into existing pages/components
@@ -48,3 +47,5 @@
 - [] can i split lair and rookie raid into smaller components that i can reuse now or in the future?
 - [] What can i use a modal view for?
 - [] review web3uikit to see what else i can use? 
+- [] notifications icons not displayed
+- [] loot and rank addresses not initialised on game contract deployment

@@ -1,24 +1,15 @@
-import { GamecontractAddress, Gameabi, providerURLs } from "../constants"
 import { useMoralis, useWeb3Contract } from "react-moralis"
 import { useEffect, useState } from "react"
-import { useNotification } from "web3uikit"
-import { ethers } from "ethers"
-import Link from "next/link"
+import { useNotification, Card } from "web3uikit"
+import { Rankabi, RankContractAddress, GamecontractAddress, Gameabi } from "../constants/index"
+import Image from "next/image"
 
-export default function RookieRaid() {
-    let playerInformation
-
-    const dispatch = useNotification()
-    //let provider
+export default function PlayerDetails({ rankNeeded }) {
+    //State hooks
     const { chainId: chainIdHex, isWeb3Enabled, account, enableWeb3 } = useMoralis()
-    const chainId = parseInt(chainIdHex)
 
-    const providerurl = chainId in providerURLs ? providerURLs[chainId] : null
-
-    const provider = new ethers.providers.JsonRpcProvider(providerurl)
-
-    const CoCWeb3Address = chainId in GamecontractAddress ? GamecontractAddress[chainId][0] : null
-
+    const [playerRankString, setPlayerRankString] = useState("")
+    const [imageURI, setImageURI] = useState("")
     const [playerDetails, setPlayerDetails] = useState({
         Username: "",
         XP: 0,
@@ -26,212 +17,170 @@ export default function RookieRaid() {
         raidAttempts: 0,
     }) // player stats
 
-    const [notificationMessage, setNotificationMessage] = useState("")
-    const [notificationTitle, setNotificationTitle] = useState("")
+    const chainId = parseInt(chainIdHex).toString()
 
-    // raid button
-    const {
-        runContractFunction: lvl1Raid,
-        isFetching,
-        isLoading,
-    } = useWeb3Contract({
-        Gameabi: Gameabi,
-        contractAddress: CoCWeb3Address,
-        functionName: "performVRFRookieRaid",
-        params: { _player: account },
-    })
+    //get contract addresses
+    const CoCWeb3Address = chainId in GamecontractAddress ? GamecontractAddress[chainId][0] : null
 
-    //raid button
-    const { runContractFunction: testRaid } = useWeb3Contract({
-        Gameabi: Gameabi,
-        contractAddress: CoCWeb3Address,
-        functionName: "callRookieRaidTest",
-        params: { _player: account },
-    })
+    const _RankContractAdress =
+        chainId in RankContractAddress ? RankContractAddress[chainId][0] : null
+
+    //get all token players Token URI's
 
     const { runContractFunction: getPlayer } = useWeb3Contract({
-        Gameabi: Gameabi,
+        abi: Gameabi,
         contractAddress: CoCWeb3Address,
         functionName: "getPlayer",
         params: { _player: account },
     })
+    const { runContractFunction: getTokenURI } = useWeb3Contract({
+        abi: Gameabi,
+        contractAddress: CoCWeb3Address,
+        functionName: "getRankTokenUris",
+        params: {
+            rankIndex: 0,
+        },
+    })
 
     const getPlayerInfo = async () => {
-        playerInformation = await getPlayer()
+        let rankTitle
+        const playerInformation = await getPlayer()
 
-        function getRankByIndex(index) {
-            let rank
-            switch (index) {
-                case 0:
-                    rank = "Officer Cadet"
-                    break
-                case 1:
-                    rank = "Second Lieutenant"
-                    break
-                case 2:
-                    rank = "Lieutenant"
-                    break
-                case 3:
-                    rank = "Captain"
-                    break
-                case 4:
-                    rank = "Major"
-                    break
-                case 5:
-                    rank = "Lieutenant Colonel"
-                    break
-                case 6:
-                    rank = "Colonel"
-                    break
-                case 7:
-                    rank = "Brigadier"
-                    break
-                case 8:
-                    rank = "Major General"
-                    break
-                case 9:
-                    rank = "Lieutenant General"
-                    break
-                case 10:
-                    rank = "General"
-                    break
-                case 11:
-                    rank = "Field Marshal"
-                    break
-                default:
-                    rank = "Invalid index"
-                    break
+        if (playerInformation) {
+            function getRankByIndex(index) {
+                let rank
+                switch (index) {
+                    case 0:
+                        rank = "Officer Cadet"
+                        break
+                    case 1:
+                        rank = "Second Lieutenant"
+                        break
+                    case 2:
+                        rank = "Lieutenant"
+                        break
+                    case 3:
+                        rank = "Captain"
+                        break
+                    case 4:
+                        rank = "Major"
+                        break
+                    case 5:
+                        rank = "Lieutenant Colonel"
+                        break
+                    case 6:
+                        rank = "Colonel"
+                        break
+                    case 7:
+                        rank = "Brigadier"
+                        break
+                    case 8:
+                        rank = "Major General"
+                        break
+                    case 9:
+                        rank = "Lieutenant General"
+                        break
+                    case 10:
+                        rank = "General"
+                        break
+                    case 11:
+                        rank = "Field Marshal"
+                        break
+                    default:
+                        rank = "Invalid index"
+                        break
+                }
+
+                return rank
             }
 
-            return rank
+            if (!playerInformation.username) {
+                rankTitle = " "
+            } else {
+                rankTitle = getRankByIndex(playerInformation.rank)
+                setPlayerRankString(playerInformation.toString())
+            }
+
+            setPlayerDetails((prevState) => ({
+                ...prevState,
+                Username: playerInformation.username,
+                Rank: rankTitle,
+                XP: playerInformation.playerXP.toString(),
+                raidAttempts: playerInformation.raidAttempts.toString(),
+            }))
         }
+    }
 
-        const rankTitle = getRankByIndex(playerInformation.rank)
+    const getRankBadge = async () => {
+        const tokenURI = await getTokenURI()
 
-        setPlayerDetails((prevState) => ({
-            ...prevState,
-            Username: playerInformation.username,
-            XP: playerInformation.playerXP.toString(),
-            Rank: rankTitle,
-            raidAttempts: playerInformation.raidAttempts.toString(),
-        }))
+        if (tokenURI) {
+            // IPFS Gateway: A server that will return IPFS files from a "normal" URL.
+            const requestURL = tokenURI.replace("ipfs://", "https://ipfs.io/ipfs/")
+            try {
+                const response = await fetch(requestURL)
+                const tokenURIResponse = await response.json()
+
+                const imageURI = tokenURIResponse.image
+
+                console.log("imageURI", imageURI)
+
+                const imageURIURL = imageURI.replace("ipfs://", "https://ipfs.io/ipfs/")
+
+                setImageURI(imageURIURL)
+            } catch (error) {
+                // Handle error if fetch or JSON parsing fails
+                console.error("Error fetching or parsing data:", error)
+            }
+        } else {
+            console.log("no token URI buddy")
+        }
     }
 
     async function updateUI() {
         await getPlayerInfo()
-    }
-
-    const listenEvents = async () => {
-        const CoCWeb3 = new ethers.Contract(CoCWeb3Address, Gameabi, provider)
-        CoCWeb3.on("RaidSuccessful", async (playerAddress) => {
-            await updateUI()
-            setNotificationMessage("Raid was Successful. You have gained XP")
-            setNotificationTitle("Raid Succesfull")
-            handleNotification()
-        })
-        CoCWeb3.on("RaidUnsuccessful", async (playerAddress) => {
-            await updateUI()
-            setNotificationMessage("Raid was Unsuccessful. You have lost a life")
-            setNotificationTitle("Raid UNSuccesfull")
-            handleNotification()
-        })
-        //event for raid attempts
-    }
-
-    const handleSuccess = async (tx) => {
-        updateUI()
-    }
-
-    const handleNotification = () => {
-        dispatch({
-            type: "info",
-            message: notificationMessage,
-            title: notificationTitle,
-            position: "topR",
-            icon: "check",
-        })
+        await getRankBadge()
     }
 
     useEffect(() => {
         if (isWeb3Enabled) {
-            // ;async () => {
-            //     // Your asynchronous code here
-            //     // playerInformation = await getPlayer()
-            //     // const data = await playerInformation.json()
-            //     // console.log(data)
-            // }
             updateUI()
-            listenEvents()
         }
-    }, [isWeb3Enabled])
+    }, [isWeb3Enabled, account])
 
     useEffect(() => {
         enableWeb3()
     }, [])
 
     return (
-        <div className="container my-12 mx-auto md:px-6">
-            <section>
-                <div className="relative overflow-hidden bg-cover bg-no-repeat bg-[50%] bg-[url(/images/ChineseThemedBackground.png)] h-[500px]">
-                    <div className="w-1/3  text-white text-sm font-bold p-4 bg-[hsla(0,0%,0%,0.70)] rounded-lg shadow-md sm:text-base sm:text-xs">
-                        <div className="grid grid-cols-2">
-                            <div className="p-4 border border-gray-500">Username:</div>
-                            <div className="p-4 border border-gray-500">
-                                {playerDetails.Username}
-                            </div>
-                            <div className="p-4 border border-gray-500">XP</div>
-                            <div className="p-4 border border-gray-500">{playerDetails.XP}</div>
-                            <div className="p-4 border border-gray-500">Rank</div>
-                            <div className="p-4 border border-gray-500">{playerDetails.Rank}</div>
-                            <div className="p-4 border border-gray-500">Lives</div>
-                            <div className="p-4 border border-gray-500">
-                                {playerDetails.raidAttempts}
-                            </div>
-                        </div>
-                    </div>
-                    <div className="absolute top-0 right-0 bottom-0 left-0 h-full w-full overflow-hidden bg-[hsla(0,0%,0%,0.45)] bg-fixed">
-                        <div className="absolute top-8 right-0 bottom-0 left-20 h-full w-full overflow-hidden bg-fixed">
-                            <div className="flex h-full items-center justify-center">
-                                <div className="px-6 text-center text-white md:px-12">
-                                    <h2 className="mb-12 text-5xl font-bold leading-tight tracking-tight">
-                                        Are you ready <br />
-                                        <span>for an adventure?</span>
-                                    </h2>
-                                    <button
-                                        type="button"
-                                        className="rounded border-2 border-neutral-50 px-[46px] pt-[14px] pb-[12px] text-sm font-medium uppercase leading-normal text-neutral-50 transition duration-150 ease-in-out hover:border-neutral-100 hover:bg-neutral-100 hover:bg-opacity-10 hover:text-neutral-100 focus:border-neutral-100 focus:text-neutral-100 focus:outline-none focus:ring-0 active:border-neutral-200 active:text-neutral-200"
-                                        data-te-ripple-init
-                                        data-te-ripple-color="light"
-                                        onClick={async () => {
-                                            await lvl1Raid({
-                                                onSuccess: handleSuccess,
-                                                onError: (error) => {
-                                                    console.log(error)
-                                                },
-                                            })
-                                        }}
-                                        disabled={isLoading || isFetching}
-                                    >
-                                        Raid
-                                    </button>
-                                    <div className="mt-10">
-                                        <Link href="/">
-                                            <button
-                                                type="button"
-                                                className="rounded border-2 border-neutral-50 px-[46px] pt-[14px] pb-[12px] text-sm font-medium uppercase leading-normal text-neutral-50 transition duration-150 ease-in-out hover:border-neutral-100 hover:bg-neutral-100 hover:bg-opacity-10 hover:text-neutral-100 focus:border-neutral-100 focus:text-neutral-100 focus:outline-none focus:ring-0 active:border-neutral-200 active:text-neutral-200"
-                                                data-te-ripple-init
-                                                data-te-ripple-color="light"
-                                            >
-                                                Back to Home Page
-                                            </button>
-                                        </Link>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+        <div>
+            <Card>
+                {rankNeeded && (
+                    <Card>
+                        <Image
+                            loader={() => imageURI}
+                            src={imageURI}
+                            height="200"
+                            width="200"
+                            alt="NFT Token"
+                            unoptimized
+                        />
+                    </Card>
+                )}
+
+                <div className="grid grid-cols-2 ">
+                    <div className="p-4 border className">Username:</div>
+                    <div className="p-4 border classNametext-center">{playerDetails.Username}</div>
+                    <div className="p-4 border ">XP:</div>
+                    <div className="p-4 border classNametext-center">{playerDetails.XP}</div>
+                    <div className="p-4 border ">Rank:</div>
+                    <div className="p-4 border classNametext-center">{playerDetails.Rank}</div>
+                    <div className="p-4 border ">Lives:</div>
+                    <div className="p-4 border classNametext-center">
+                        {playerDetails.raidAttempts}
                     </div>
                 </div>
-            </section>
+            </Card>
         </div>
     )
 }

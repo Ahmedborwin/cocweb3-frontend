@@ -5,10 +5,10 @@ import {
     LootcontractAddress,
     Lootabi,
 } from "../constants"
+import PlayerDetails from "./payerDetails"
 import { useMoralis, useWeb3Contract } from "react-moralis"
 import { useEffect, useState } from "react"
-import { useNotification } from "web3uikit"
-
+import { useNotification, Card } from "web3uikit"
 import { ethers } from "ethers"
 
 export default function Lair() {
@@ -32,7 +32,9 @@ export default function Lair() {
         raidAttempts: 0,
     }) // player stats
 
-    const [username, setUsername] = useState("") //variable for New Username unput field
+    //variable for New Username unput field
+    const [username, setUsername] = useState("")
+    const [playerFound, setPlayerFound] = useState(false) // bool playerfound? used by render conidtions
 
     const [notificationMessage, setNotificationMessage] = useState("")
     const [notificationTitle, setNotificationTitle] = useState("")
@@ -55,76 +57,19 @@ export default function Lair() {
         params: { _player: account },
     })
 
-    const getPlayerInfo = async () => {
-        let rankTitle
-        const playerInformation = await getPlayer()
-
-        if (playerInformation) {
-            function getRankByIndex(index) {
-                let rank
-                switch (index) {
-                    case 0:
-                        rank = "Officer Cadet"
-                        break
-                    case 1:
-                        rank = "Second Lieutenant"
-                        break
-                    case 2:
-                        rank = "Lieutenant"
-                        break
-                    case 3:
-                        rank = "Captain"
-                        break
-                    case 4:
-                        rank = "Major"
-                        break
-                    case 5:
-                        rank = "Lieutenant Colonel"
-                        break
-                    case 6:
-                        rank = "Colonel"
-                        break
-                    case 7:
-                        rank = "Brigadier"
-                        break
-                    case 8:
-                        rank = "Major General"
-                        break
-                    case 9:
-                        rank = "Lieutenant General"
-                        break
-                    case 10:
-                        rank = "General"
-                        break
-                    case 11:
-                        rank = "Field Marshal"
-                        break
-                    default:
-                        rank = "Invalid index"
-                        break
-                }
-
-                return rank
-            }
-
-            if (!playerInformation.username) {
-                rankTitle = " "
-            } else {
-                rankTitle = getRankByIndex(playerInformation.rank)
-            }
-
-            setPlayerDetails((prevState) => ({
-                ...prevState,
-                Username: playerInformation.username,
-                Rank: rankTitle,
-                XP: playerInformation.playerXP.toString(),
-                raidAttempts: playerInformation.raidAttempts.toString(),
-            }))
-        }
-    }
+    const { runContractFunction: getPlayerFound } = useWeb3Contract({
+        abi: Gameabi,
+        contractAddress: CoCWeb3Address,
+        functionName: "getPlayerFound",
+        params: { _playerAddress: account },
+    })
 
     async function updateUI() {
-        await getPlayerInfo()
+        const playerFoundbool = await getPlayerFound()
+        if (playerFoundbool) {
+            const playerInformation = await getPlayer()
+            setPlayerFound(true)
+        }
     }
 
     const listenEvents = async () => {
@@ -166,32 +111,28 @@ export default function Lair() {
             updateUI()
             listenEvents()
         }
-    }, [isWeb3Enabled])
+    }, [isWeb3Enabled, account])
 
     useEffect(() => {
         enableWeb3()
     }, [])
 
-    useEffect(() => {
-        updateUI()
-    }, [account])
-
     return CoCWeb3Address ? (
         <div>
-            {!playerDetails.Username && (
+            {!playerFound && (
                 <div
                     id="createPlayer-background-container"
-                    className="fixed top-10 left-10 right-10 bottom-10 bg-cover bg-white flex justify-center opacity-80"
+                    className="fixed top-10 left-10 right-10 bottom-10 bg-cover bg-white flex justify-center opacity-80 "
                     style={{
                         backgroundImage: `url(/images/citySkyline.jpeg)`,
                         backgroundRepeat: "no-repeat",
                         backgroundSize: "cover",
                         backgroundColor: "#ffffff",
                         maxWidth: "1024px",
-                        marginTop: "60px",
+                        marginTop: "80px",
                     }}
                 >
-                    <div id="CreatePlayerForm" className="mt-40">
+                    <div id="CreatePlayerForm" className="mt-40 ">
                         <h2 className="text-2xl font-bold mb-4 ml-20">What do they call you?</h2>
                         <form>
                             <input
@@ -221,31 +162,10 @@ export default function Lair() {
                     </div>
                 </div>
             )}
-            {playerDetails.Username && (
+            {playerFound && (
                 <div>
-                    <div id="playerStats">
-                        <h2 className="mb-10 mt-10 text-3xl md:text-4xl lg:text-5xl font-bold underline">
-                            Welcome <span className="text-blue-500">{playerDetails.Username}</span>.
-                            Are you ready to play?
-                        </h2>
-                        <div className="w-1/2  text-white text-sm font-bold p-4 bg-[hsla(0,0%,0%,0.70)] rounded-lg shadow-md sm:text-base sm:text-xs">
-                            <div className="grid grid-cols-4">
-                                <div className="p-4 border border-gray-500">Username:</div>
-                                <div className="p-4 border border-gray-500">Rank</div>
-                                <div className="p-4 border border-gray-500">XP</div>
-                                <div className="p-4 border border-gray-500">Lives</div>
-                                <div className="p-4 border border-gray-500">
-                                    {playerDetails.Username}
-                                </div>
-                                <div className="p-4 border border-gray-500">
-                                    {playerDetails.Rank}
-                                </div>
-                                <div className="p-4 border border-gray-500">{playerDetails.XP}</div>
-                                <div className="p-4 border border-gray-500">
-                                    {playerDetails.raidAttempts}
-                                </div>
-                            </div>
-                        </div>
+                    <div id="playerStats" className="container my-12 mx-auto md:px-6 w-1/3">
+                        <PlayerDetails rankNeeded={true} />
                     </div>
 
                     <div
@@ -277,8 +197,6 @@ export default function Lair() {
                                 <button
                                     type="button"
                                     className="inline-block rounded bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#3b71ca] transition duration-150 ease-in-out hover:bg-primary-600 hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:bg-primary-600 focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] focus:outline-none focus:ring-0 active:bg-primary-700 active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.3),0_4px_18px_0_rgba(59,113,202,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(59,113,202,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(59,113,202,0.2),0_4px_18px_0_rgba(59,113,202,0.1)]"
-                                    data-te-ripple-init
-                                    data-te-ripple-color="light"
                                 >
                                     Wet your Beak
                                 </button>
