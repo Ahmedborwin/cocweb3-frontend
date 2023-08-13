@@ -8,7 +8,8 @@ import {
     Lootabi,
 } from "../constants/index"
 
-export default function RaidModal({ onClose, isVisible }) {
+export default function RaidModal({ onClose, isVisible, raidStatus }) {
+    console.log("raidStatus", raidStatus)
     return (
         <div>
             <Modal
@@ -21,7 +22,7 @@ export default function RaidModal({ onClose, isVisible }) {
                     }
                 }}
             >
-                <div>Raid Successfull I guess</div>
+                {raidStatus ? <div>Raid Successfull</div> : <div>Raid Unsuccessfull</div>}
             </Modal>
         </div>
     )

@@ -36,7 +36,7 @@ export default function NFTBox({ tokenURI, tokentally }) {
     return (
         <div>
             {imageURI ? (
-                <div className="px-4 flex flex-col items-end gap-2 ">
+                <div className="px-2 py-2 flex flex-col items-end gap-2 ">
                     <Card description={tokenDescription} cursorType="pointer">
                         <div>
                             <div>

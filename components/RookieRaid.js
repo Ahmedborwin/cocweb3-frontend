@@ -36,6 +36,7 @@ export default function RookieRaid() {
 
     const [notificationMessage, setNotificationMessage] = useState("")
     const [notificationTitle, setNotificationTitle] = useState("")
+    const [raidStatus, setRaidStatus] = useState(false)
     const [showModal, setShowModal] = useState(false)
     const hideModal = () => setShowModal(false)
 
@@ -69,13 +70,15 @@ export default function RookieRaid() {
             await updateUI()
             setNotificationMessage("Raid was Successful. You have gained XP")
             setNotificationTitle("Raid Succesfull")
+            setRaidStatus(true)
             setShowModal(true)
         })
         CoCWeb3.on("RaidUnsuccessful", async (playerAddress) => {
             await updateUI()
             setNotificationMessage("Raid was Unsuccessful. You have lost a life")
-            setNotificationTitle("Raid UNSuccesfull")
+            setNotificationTitle("Raid Unsuccesfull")
             handleNotification()
+            setRaidStatus(false)
             setShowModal(true)
         })
         //event for raid attempts
@@ -87,11 +90,10 @@ export default function RookieRaid() {
 
     const handleNotification = () => {
         dispatch({
-            type: "info",
+            type: "success",
             message: notificationMessage,
             title: notificationTitle,
             position: "topR",
-            icon: "check",
         })
     }
 
@@ -109,7 +111,7 @@ export default function RookieRaid() {
         <div>
             {showModal ? (
                 <div>
-                    <RaidModal onClose={hideModal} isVisible={showModal} />
+                    <RaidModal onClose={hideModal} isVisible={showModal} raidStatus={raidStatus} />
                 </div>
             ) : (
                 <div>

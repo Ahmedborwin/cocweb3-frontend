@@ -23,8 +23,8 @@
 - [X]  card component to parse tokenURI object and display nft 
 - [X]  component to display all card nfts owned by player
     - [] improve UI of this
-    - [x] fix bug when new NFT is created
-- [] New loot NFT event triggers calling of URIlist function again and UI update
+    - [X] fix bug when new NFT is created
+- [X] New loot NFT event triggers calling of URIlist function again and UI update
 - [X] filter to unique loot + add count of tokens owned to the NFT UI
 - [] send player back to home screen if address not recognised.. but how?
 - []
@@ -33,19 +33,19 @@
 - [] send player back to home screen if address not recognised.. but how?
 
 # player details component
-- [] create this and import into existing pages/components
-- [] add rank nft to UI
-- [] improve player stats grid - trying to use NftCard from web3uikit but unable to import. use moralis somehow?
+- [X] create this and import into existing pages/components
+- [X] add rank nft to UI
+- [] 
 
 
 # Tests
-- [] add test rookie raid button to a screen
+- [X] add test rookie raid button to a screen
 - [] 
 
 
 # Thoughts
 - [] can i split lair and rookie raid into smaller components that i can reuse now or in the future?
-- [] What can i use a modal view for?
 - [] review web3uikit to see what else i can use? 
 - [] notifications icons not displayed
 - [] loot and rank addresses not initialised on game contract deployment
+- [] improve player stats grid - trying to use NftCard from web3uikit but unable to import. use moralis somehow?

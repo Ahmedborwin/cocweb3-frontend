@@ -73,16 +73,19 @@ export default function ArmoryComponent() {
 
     async function updateUI() {
         const playerFoundbool = await getPlayerFound()
-        if (playerFoundbool) {
-            setPlayerFound(true)
-            tokenList = await getNftsOwnedbyPlayer()
-            await new Promise(async (resolve) => {
-                if (tokenList) {
-                    await getplayerNFTS()
-                    resolve()
-                }
-            })
-        }
+        await new Promise(async (resolve) => {
+            if (playerFoundbool) {
+                setPlayerFound(true)
+                resolve()
+                tokenList = await getNftsOwnedbyPlayer()
+                await new Promise(async (resolve) => {
+                    if (tokenList) {
+                        await getplayerNFTS()
+                        resolve()
+                    }
+                })
+            }
+        })
     }
 
     const listenEvents = async () => {
